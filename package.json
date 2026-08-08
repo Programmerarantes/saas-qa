@@ -1,0 +1,21 @@
+{
+  "name": "saas-qa",
+  "version": "1.0.0",
+  "description": "Projeto pessoal para praticar automação de testes (E2E, API, integração com banco) em um app full stack que eu mesmo controlo do início ao fim.",
+  "main": "index.js",
+  "scripts": {
+    "test:api:reset:db": "tsx tests/api/reset-test-db.ts",
+    "test:api": "playwright test --project=api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0",
+    "@types/pg": "^8.11.6",
+    "cross-env": "^7.0.3",
+    "pg": "^8.22.0"
+  }
+}
