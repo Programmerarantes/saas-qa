@@ -1,0 +1,56 @@
+name: API Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Instalar dependências da raiz
+        run: pnpm install --frozen-lockfile
+
+      - name: Instalar dependências do backend
+        run: pnpm --dir backend install --frozen-lockfile
+
+      - name: Subir PostgreSQL
+        run: docker compose up -d postgres
+
+      - name: Aguardar PostgreSQL
+        run: |
+          until docker exec qa-saas-postgres pg_isready -U qa_user -d qa_saas; do
+            sleep 1
+          done
+
+      - name: Criar banco de testes
+        run: |
+          docker exec qa-saas-postgres \
+            psql -U qa_user -d postgres \
+            -c "CREATE DATABASE qa_saas_test OWNER qa_user;"
+
+      - name: Criar tabelas no banco de testes
+        run: |
+          docker exec -i qa-saas-postgres \
+            psql -U qa_user -d qa_saas_test < backend/db/init.sql
+
+      - name: Rodar testes de API
+        run: pnpm run test:api
