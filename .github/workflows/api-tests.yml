@@ -18,18 +18,13 @@ jobs:
       - name: Configurar pnpm
         uses: pnpm/action-setup@v6
         with:
-            version: 10  
+          version: 10
 
       - name: Configurar Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: pnpm
-
-      - name: Configurar pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10
 
       - name: Instalar dependências da raiz
         run: pnpm install --frozen-lockfile
@@ -40,10 +35,25 @@ jobs:
       - name: Subir PostgreSQL
         run: docker compose up -d postgres
 
-      - name: Aguardar PostgreSQL
+      - name: Aguardar PostgreSQL ficar saudável
         run: |
-          until docker exec qa-saas-postgres pg_isready -U qa_user -d qa_saas; do
-            sleep 1
+          for attempt in {1..30}; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' qa-saas-postgres 2>/dev/null || true)"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            echo "PostgreSQL ainda não está pronto (status: ${status:-desconhecido})"
+            sleep 2
+          done
+          docker logs qa-saas-postgres
+          exit 1
+
+      - name: Confirmar conexão com PostgreSQL
+        run: |
+          until docker exec qa-saas-postgres \
+            psql -U qa_user -d postgres -c "SELECT 1" >/dev/null 2>&1; do
+            echo "Aguardando conexão estável com PostgreSQL..."
+            sleep 2
           done
 
       - name: Criar banco de testes
