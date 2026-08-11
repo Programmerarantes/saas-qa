@@ -1,6 +1,8 @@
 import { pool } from '../db'
 import { NewsItem, NewsSource } from '../domain/news'
 
+export type NewsItemInput = Omit<NewsItem, 'id' | 'createdAt' | 'updatedAt'>
+
 export interface ListNewsInput {
   source?: NewsSource
   limit: number
@@ -74,4 +76,27 @@ export async function listNews(input: ListNewsInput): Promise<ListNewsResult> {
     items: result.rows.map(mapNewsRow),
     total: Number(countResult.rows[0].total),
   }
+}
+
+export async function upsertNews(items: NewsItemInput[]): Promise<number> {
+  for (const item of items) {
+    await pool.query(
+      `INSERT INTO news_items
+        (source, external_id, title, url, summary, author, image_url, published_at, score)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       ON CONFLICT (source, external_id) DO UPDATE SET
+        title = EXCLUDED.title,
+        url = EXCLUDED.url,
+        summary = EXCLUDED.summary,
+        author = EXCLUDED.author,
+        image_url = EXCLUDED.image_url,
+        published_at = EXCLUDED.published_at,
+        score = EXCLUDED.score,
+        updated_at = NOW()` ,
+      [item.source, item.externalId, item.title, item.url, item.summary,
+        item.author, item.imageUrl, item.publishedAt, item.score],
+    )
+  }
+
+  return items.length
 }
