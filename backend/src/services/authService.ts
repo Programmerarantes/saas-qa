@@ -2,11 +2,10 @@ import { pool } from "../db";
 import { ConflictException, UnauthorizedException } from "../exceptions/HttpException";
 import { LoginInput, RegisterInput } from "../schemas/auth.schema"
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { JWT_EXPIRES_IN, JWT_SECRET } from "../config/auth";
 
 const SALT_ROUNDS = 10
-const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-only-secret-change-me'
-const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? '1h') as SignOptions['expiresIn']
 
 export interface RegisteredUser {
     id: string

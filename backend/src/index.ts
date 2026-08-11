@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import { checkDbConnection, pool } from './db'
 import { authRouter } from './routes/auth'
 import { errorHandler } from './middlewares/errorHandler'
+import { authenticate } from './middlewares/authenticate'
 
 const app = express()
 const PORT = process.env.PORT ?? 3000
@@ -17,7 +18,7 @@ app.get('/health', async (_req: Request, res: Response) => {
     })
 })
 
-app.get('/users', async (_req: Request, res: Response) => {
+app.get('/users', authenticate, async (_req: Request, res: Response) => {
     const result = await pool.query('SELECT * from users ORDER BY created_at DESC')
     res.json(result.rows)
 })
