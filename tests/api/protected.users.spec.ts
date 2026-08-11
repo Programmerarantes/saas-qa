@@ -49,6 +49,13 @@ test.describe("GET /users", () => {
     });
 
     expect(response.status()).toBe(200);
-    expect(Array.isArray(await response.json())).toBe(true);
+    const users = await response.json();
+    expect(Array.isArray(users)).toBe(true);
+    expect(users.length).toBeGreaterThan(0);
+    expect(users[0]).toMatchObject({
+      username: expect.any(String),
+      email: expect.any(String),
+    });
+    expect(users[0].password_hash).toBeUndefined();
   });
 });

@@ -19,7 +19,11 @@ app.get('/health', async (_req: Request, res: Response) => {
 })
 
 app.get('/users', authenticate, async (_req: Request, res: Response) => {
-    const result = await pool.query('SELECT * from users ORDER BY created_at DESC')
+    const result = await pool.query(
+        `SELECT id, username, email, created_at
+         FROM users
+         ORDER BY created_at DESC`
+    )
     res.json(result.rows)
 })
 
