@@ -4,6 +4,7 @@ import { checkDbConnection, pool } from './db'
 import { authRouter } from './routes/auth'
 import { errorHandler } from './middlewares/errorHandler'
 import { authenticate } from './middlewares/authenticate'
+import { newsRouter } from './routes/news'
 
 const app = express()
 const PORT = process.env.PORT ?? 3000
@@ -13,6 +14,7 @@ app.use(cors({
     origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
 }))
 app.use('/auth', authRouter)
+app.use('/news', newsRouter)
 
 app.get('/health', async (_req: Request, res: Response) => {
     const dbOk = await checkDbConnection()

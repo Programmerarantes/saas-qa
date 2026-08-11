@@ -8,7 +8,7 @@ const TEST_DATABASE_URL =
     const pool = new Pool({ connectionString: TEST_DATABASE_URL })
 
     try {
-        await pool.query('TRUNCATE TABLE users RESTART IDENTITY CASCADE;')       
+        await pool.query('TRUNCATE TABLE users, news_items RESTART IDENTITY CASCADE;')
     } finally {
         await pool.end()
     }
