@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express'
+import cors from 'cors'
 import { checkDbConnection, pool } from './db'
 import { authRouter } from './routes/auth'
 import { errorHandler } from './middlewares/errorHandler'
@@ -8,6 +9,9 @@ const app = express()
 const PORT = process.env.PORT ?? 3000
 
 app.use(express.json())
+app.use(cors({
+    origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
+}))
 app.use('/auth', authRouter)
 
 app.get('/health', async (_req: Request, res: Response) => {
