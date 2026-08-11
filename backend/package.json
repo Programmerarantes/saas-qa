@@ -2,11 +2,12 @@
   "name": "qa-saas-backend",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.12.1",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:test":	"cross-env PORT=3001 DATABASE_URL=postgres://qa_user:qa_pass@localhost:5432/qa_saas_test tsx src/index.ts",
+    "start:test": "cross-env PORT=3001 DATABASE_URL=postgres://qa_user:qa_pass@localhost:5432/qa_saas_test tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
@@ -14,17 +15,27 @@
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.12.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.14.10",
     "@types/pg": "^8.11.6",
+    "cross-env": "^10.1.0",
     "tsx": "^4.16.2",
     "typescript": "^5.5.3",
-    "vitest": "^4.1.10",
-    "cross-env":	"^10.1.0"
+    "vitest": "^4.1.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "bcrypt",
+      "esbuild"
+    ]
   }
 }
