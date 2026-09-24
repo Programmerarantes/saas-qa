@@ -7,7 +7,8 @@
     "dev": "concurrently \"pnpm --dir backend dev\" \"pnpm --dir frontend dev\"",
     "build": "pnpm --dir backend build && pnpm --dir frontend build",
     "lint": "pnpm --dir backend typecheck && pnpm --dir frontend lint",
-    "test": "pnpm --dir backend test",
+    "test": "pnpm --dir backend test && pnpm --dir frontend test",
+    "test:frontend": "pnpm --dir frontend test",
     "test:api:reset:db": "tsx tests/api/reset-test-db.ts",
     "test:api": "playwright test --project=api",
     "test:e2e": "playwright test --project=e2e"

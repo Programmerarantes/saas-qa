@@ -32,6 +32,7 @@ O backend não serve JSON estático: autenticação, autorização, conteúdo, p
 
 - Home profissional, About, Articles, Case Studies, Test Lab e Authentication Lab.
 - PT-BR como idioma padrão e seletor PT-BR/EN.
+- Tema claro/escuro com preferência do sistema, alternância acessível no header e persistência local.
 - Conteúdo `ARTICLE` e `CASE_STUDY`, categorias pequenas e tags livres.
 - Traduções PT-BR obrigatórias e EN opcional; detalhe em inglês faz fallback para PT-BR com aviso discreto.
 - Markdown com blocos de código; renderização no backend sanitizada com `sanitize-html` e preview do editor sanitizado no browser.
@@ -98,14 +99,15 @@ Admin e Lab usam tabelas, tokens e fluxos separados. O Lab V1 cobre happy path, 
 ## Testes
 
 ```bash
-pnpm --dir backend test       # unitários
-pnpm lint                     # typecheck frontend + backend
-pnpm build                    # build frontend + backend
+pnpm test                     # testes unitários backend + frontend
+pnpm test:frontend             # testes de comportamento do frontend
+pnpm lint                      # typecheck frontend + backend
+pnpm build                     # build frontend + backend
 pnpm test:api                 # Playwright API; Postgres de teste separado
 pnpm test:e2e                 # Playwright no frontend + backend de teste
 ```
 
-Os testes de API resetam somente o estado mutável de conteúdo/sessão e mantêm os usuários de demonstração criados no bootstrap. A suíte cobre Admin protegido, login inválido, criação/publicação, draft, fallback de tradução, login do Lab, sessão, logout e request autenticada. O E2E cobre a navegação Home → Test Lab → Authentication Lab.
+Os testes de API resetam somente o estado mutável de conteúdo/sessão e mantêm os usuários de demonstração criados no bootstrap. A suíte cobre Admin protegido, login inválido, criação/publicação, draft, fallback de tradução, login do Lab, sessão, logout e request autenticada. Os testes do frontend cobrem a preferência do tema e sua aplicação no documento. O E2E cobre a navegação Home → Test Lab → Authentication Lab, persistência do tema e viewport móvel.
 
 ## Segurança, acessibilidade e performance
 

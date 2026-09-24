@@ -11,13 +11,17 @@ import AdminDashboard from '@/pages/AdminDashboard'
 import AdminEditor from '@/pages/AdminEditor'
 import Contact from '@/pages/Contact'
 import type { Locale } from '@/lib/i18n'
+import { applyTheme, getInitialTheme, toggleTheme, type Theme } from '@/lib/theme'
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname)
   const [locale, setLocale] = useState<Locale>((localStorage.getItem('sql_locale') as Locale) || 'pt-BR')
+  const [theme, setTheme] = useState<Theme>(() => getInitialTheme(localStorage, window.matchMedia('(prefers-color-scheme: dark)').matches))
   useEffect(() => { const handler = () => setPath(window.location.pathname); window.addEventListener('popstate', handler); return () => window.removeEventListener('popstate', handler) }, [])
+  useEffect(() => { applyTheme(theme, localStorage, document.documentElement) }, [theme])
   function navigate(nextPath: string) { setPath(nextPath) }
   function changeLocale(next: Locale) { localStorage.setItem('sql_locale', next); setLocale(next) }
+  function changeTheme() { setTheme((current) => toggleTheme(current)) }
   if (path === '/admin/login') return <AdminLogin onNavigate={navigate} />
   if (path === '/admin' || path === '/admin/content') return <AdminDashboard onNavigate={navigate} />
   if (path === '/admin/content/new') return <AdminEditor onNavigate={navigate} />
@@ -31,5 +35,5 @@ export default function App() {
   else if (path.startsWith('/cases/')) page = <ContentDetail type="CASE_STUDY" slug={path.split('/').pop()!} locale={locale} />
   else if (path === '/test-lab') page = <TestLab locale={locale} onNavigate={navigate} />
   else if (path === '/test-lab/authentication') page = <AuthenticationLab locale={locale} />
-  return <Layout locale={locale} onLocaleChange={changeLocale} onNavigate={navigate}>{page}</Layout>
+  return <Layout locale={locale} theme={theme} onThemeToggle={changeTheme} onLocaleChange={changeLocale} onNavigate={navigate}>{page}</Layout>
 }
