@@ -44,10 +44,15 @@ export function adminLogin(identifier: string, password: string) {
   return request<{ token: string; user: { displayName: string; email: string } }>('/admin/auth/login', { method: 'POST', body: JSON.stringify({ identifier, password }) })
 }
 export function adminList() { return request<{ items: ContentItem[] }>('/admin/content', { headers: adminHeaders() }) }
+
 export function adminGet(id: string) { return request<{ item: ContentItem }>('/admin/content/' + id, { headers: adminHeaders() }) }
+
 export function adminCreate(payload: ContentPayload) { return request<{ item: ContentItem }>('/admin/content', { method: 'POST', headers: adminHeaders(), body: JSON.stringify(payload) }) }
+
 export function adminUpdate(id: string, payload: ContentPayload) { return request<{ item: ContentItem }>('/admin/content/' + id, { method: 'PUT', headers: adminHeaders(), body: JSON.stringify(payload) }) }
+
 export function adminDelete(id: string) { return request<void>('/admin/content/' + id, { method: 'DELETE', headers: adminHeaders() }) }
+
 export function adminLogout() { return request<void>('/admin/auth/logout', { method: 'POST', headers: adminHeaders() }) }
 
 export function labLogin(identifier: string, password: string) {
