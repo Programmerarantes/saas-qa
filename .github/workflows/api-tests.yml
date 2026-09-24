@@ -18,7 +18,7 @@ jobs:
       - name: Configurar pnpm
         uses: pnpm/action-setup@v6
         with:
-            version: 10  
+          version: 10
 
       - name: Configurar Node.js
         uses: actions/setup-node@v6
@@ -26,24 +26,43 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Configurar pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10
-
       - name: Instalar dependências da raiz
         run: pnpm install --frozen-lockfile
 
       - name: Instalar dependências do backend
         run: pnpm --dir backend install --frozen-lockfile
 
+      - name: Instalar dependências do frontend
+        run: pnpm --dir frontend install --frozen-lockfile
+
+      - name: Verificar tipos, build e testes unitários
+        run: |
+          pnpm lint
+          pnpm build
+          pnpm test
+
       - name: Subir PostgreSQL
         run: docker compose up -d postgres
 
-      - name: Aguardar PostgreSQL
+      - name: Aguardar PostgreSQL ficar saudável
         run: |
-          until docker exec qa-saas-postgres pg_isready -U qa_user -d qa_saas; do
-            sleep 1
+          for attempt in {1..30}; do
+            status="$(docker inspect -f '{{.State.Health.Status}}' qa-saas-postgres 2>/dev/null || true)"
+            if [ "$status" = "healthy" ]; then
+              exit 0
+            fi
+            echo "PostgreSQL ainda não está pronto (status: ${status:-desconhecido})"
+            sleep 2
+          done
+          docker logs qa-saas-postgres
+          exit 1
+
+      - name: Confirmar conexão com PostgreSQL
+        run: |
+          until docker exec qa-saas-postgres \
+            psql -U qa_user -d postgres -c "SELECT 1" >/dev/null 2>&1; do
+            echo "Aguardando conexão estável com PostgreSQL..."
+            sleep 2
           done
 
       - name: Criar banco de testes
@@ -55,7 +74,7 @@ jobs:
       - name: Criar tabelas no banco de testes
         run: |
           docker exec -i qa-saas-postgres \
-            psql -U qa_user -d qa_saas_test < backend/db/init.sql
+            psql -U qa_user -d qa_saas_test < backend/db/migrations/001_software_quality_lab.sql
 
       - name: Rodar testes de API
         run: pnpm run test:api

@@ -19,3 +19,36 @@ export function validate(schema: ZodType) {
     next()
   }
 }
+
+export function validateQuery(schema: ZodType) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.query)
+
+    if (!result.success) {
+      const details = result.error.issues.map((issue) => ({
+        field: issue.path.join('.') || '(query string)',
+        message: issue.message,
+      }))
+
+      return next(new BadRequestException('parâmetros inválidos', details))
+    }
+
+    req.query = result.data as typeof req.query
+    next()
+  }
+}
+
+export function validateParams(schema: ZodType) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.params)
+    if (!result.success) {
+      const details = result.error.issues.map((issue) => ({
+        field: issue.path.join('.') || '(parâmetro)',
+        message: issue.message,
+      }))
+      return next(new BadRequestException('parâmetros inválidos', details))
+    }
+    req.params = result.data as typeof req.params
+    next()
+  }
+}
