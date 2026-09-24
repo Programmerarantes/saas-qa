@@ -1,0 +1,3 @@
+PLACEHOLDER — Software Quality Lab
+
+Replace this file with the real curriculum and set VITE_RESUME_URL when the professional information is ready.

@@ -1,7 +1,6 @@
 import { Pool } from 'pg';
 
-const connectionString = process.env.DATABASE_URL ?? 'postgresql://user:password@localhost:5432/qa_saas';
-
+const connectionString = process.env.DATABASE_URL ?? 'postgresql://qa_user:qa_pass@localhost:5432/qa_saas'
 export const pool = new Pool({ connectionString });
 
 export async function checkDbConnection(): Promise<boolean> {
