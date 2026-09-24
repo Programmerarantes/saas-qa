@@ -42,3 +42,9 @@ export class ConflictException extends HttpException {
     super(409, message, content)
   }
 }
+
+export class TooManyRequestsException extends HttpException {
+  constructor(message = 'muitas requisições', content?: unknown) {
+    super(429, message, content)
+  }
+}

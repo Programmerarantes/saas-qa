@@ -1,11 +1,16 @@
 {
-  "name": "saas-qa",
+  "name": "software-quality-lab",
   "version": "1.0.0",
-  "description": "Projeto pessoal para praticar automação de testes (E2E, API, integração com banco) em um app full stack que eu mesmo controlo do início ao fim.",
+  "description": "Software Quality Lab: conteúdo técnico, case studies e experimentos reais de engenharia de qualidade.",
   "main": "index.js",
   "scripts": {
+    "dev": "concurrently \"pnpm --dir backend dev\" \"pnpm --dir frontend dev\"",
+    "build": "pnpm --dir backend build && pnpm --dir frontend build",
+    "lint": "pnpm --dir backend typecheck && pnpm --dir frontend lint",
+    "test": "pnpm --dir backend test",
     "test:api:reset:db": "tsx tests/api/reset-test-db.ts",
-    "test:api": "playwright test --project=api"
+    "test:api": "playwright test --project=api",
+    "test:e2e": "playwright test --project=e2e"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +21,7 @@
     "@types/node": "^26.2.0",
     "@types/pg": "^8.11.6",
     "cross-env": "^7.0.3",
-    "pg": "^8.22.0"
+    "pg": "^8.22.0",
+    "concurrently": "^9.2.1"
   }
 }

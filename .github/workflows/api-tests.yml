@@ -32,6 +32,15 @@ jobs:
       - name: Instalar dependências do backend
         run: pnpm --dir backend install --frozen-lockfile
 
+      - name: Instalar dependências do frontend
+        run: pnpm --dir frontend install --frozen-lockfile
+
+      - name: Verificar tipos, build e testes unitários
+        run: |
+          pnpm lint
+          pnpm build
+          pnpm test
+
       - name: Subir PostgreSQL
         run: docker compose up -d postgres
 
@@ -65,7 +74,7 @@ jobs:
       - name: Criar tabelas no banco de testes
         run: |
           docker exec -i qa-saas-postgres \
-            psql -U qa_user -d qa_saas_test < backend/db/init.sql
+            psql -U qa_user -d qa_saas_test < backend/db/migrations/001_software_quality_lab.sql
 
       - name: Rodar testes de API
         run: pnpm run test:api

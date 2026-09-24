@@ -8,7 +8,10 @@ const TEST_DATABASE_URL =
     const pool = new Pool({ connectionString: TEST_DATABASE_URL })
 
     try {
-        await pool.query('TRUNCATE TABLE users, news_items RESTART IDENTITY CASCADE;')
+        // The Playwright web server may initialize system users before globalSetup runs.
+        // Keep those seeded identities and reset only mutable test state.
+        await pool.query('TRUNCATE TABLE content_translations, content_entries, lab_sessions RESTART IDENTITY CASCADE;')
+        await pool.query("UPDATE lab_users SET failed_attempts = 0, status = 'ACTIVE', locked_until = NULL")
     } finally {
         await pool.end()
     }
