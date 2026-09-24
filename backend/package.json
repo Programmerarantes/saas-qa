@@ -7,7 +7,9 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:test": "cross-env PORT=3001 DATABASE_URL=postgres://qa_user:qa_pass@localhost:5432/qa_saas_test tsx src/index.ts",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:migrate:compiled": "node dist/db/migrate.js",
+    "start:test": "cross-env PORT=3001 DATABASE_URL=postgres://qa_user:qa_pass@localhost:5432/qa_saas_test sh -c \"pnpm db:migrate && tsx src/index.ts\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

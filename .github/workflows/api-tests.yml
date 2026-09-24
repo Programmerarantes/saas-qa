@@ -71,10 +71,8 @@ jobs:
             psql -U qa_user -d postgres \
             -c "CREATE DATABASE qa_saas_test OWNER qa_user;"
 
-      - name: Criar tabelas no banco de testes
-        run: |
-          docker exec -i qa-saas-postgres \
-            psql -U qa_user -d qa_saas_test < backend/db/migrations/001_software_quality_lab.sql
+      - name: Aplicar migrations no banco de testes
+        run: DATABASE_URL=postgres://qa_user:qa_pass@localhost:5432/qa_saas_test pnpm --dir backend db:migrate
 
       - name: Rodar testes de API
         run: pnpm run test:api

@@ -47,10 +47,11 @@ Pré-requisitos: Node.js 22+, pnpm 10+ e Docker.
 
 ```bash
 cp .env.example .env
-docker compose up -d postgres
 pnpm install
 pnpm --dir backend install
 pnpm --dir frontend install
+docker compose up -d postgres
+pnpm db:migrate
 pnpm dev
 ```
 
@@ -61,7 +62,7 @@ Health check: `http://localhost:3000/health`
 
 Para entrar no Admin local, use os valores de `ADMIN_EMAIL` e `ADMIN_PASSWORD` do `.env` (por padrão `admin@softwarequalitylab.local` / `ChangeMe123!`). Para o Lab, use `LAB_DEMO_EMAIL` e `LAB_DEMO_PASSWORD` (por padrão `demo@lab.local` / `LabPass123!`). Troque todos os segredos fora de um ambiente local.
 
-O primeiro boot do Postgres executa `backend/db/init.sql`, que inclui a migration `backend/db/migrations/001_software_quality_lab.sql`. Se já existia um volume da aplicação antiga, a migration remove explicitamente `users` e `news_items`, pois esses dados pertencem ao produto descartado. Para recriar o banco desde zero, remova somente o volume nomeado do projeto quando isso for aceitável.
+O backend executa `pnpm db:migrate` antes de iniciar. As migrations ficam em `backend/db/migrations/` e as versões aplicadas são registradas em `schema_migrations`. O `backend/db/init.sql` existe para o primeiro boot do PostgreSQL no Docker, mas o runner é o caminho usado no desenvolvimento, CI e produção. Se já existia um volume da aplicação antiga, a migration remove explicitamente `users` e `news_items`, pois esses dados pertencem ao produto descartado. Para recriar o banco desde zero, remova somente o volume nomeado do projeto quando isso for aceitável.
 
 ## Variáveis de ambiente
 
@@ -72,6 +73,14 @@ Veja [.env.example](.env.example). As principais são:
 - `LAB_DEMO_EMAIL`, `LAB_DEMO_PASSWORD`.
 
 Segredos não são importados pelo frontend. O frontend conhece apenas `VITE_API_URL`.
+
+Em produção, execute as migrations antes de iniciar a API:
+
+```bash
+DATABASE_URL="postgres://..." pnpm --dir backend db:migrate
+```
+
+O comando aplica somente arquivos ainda ausentes em `schema_migrations`, dentro de transação e com lock para evitar execuções concorrentes.
 
 ## Conteúdo e Admin
 

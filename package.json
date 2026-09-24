@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "concurrently \"pnpm --dir backend dev\" \"pnpm --dir frontend dev\"",
     "build": "pnpm --dir backend build && pnpm --dir frontend build",
+    "db:migrate": "pnpm --dir backend db:migrate",
     "lint": "pnpm --dir backend typecheck && pnpm --dir frontend lint",
     "test": "pnpm --dir backend test && pnpm --dir frontend test",
     "test:frontend": "pnpm --dir frontend test",
